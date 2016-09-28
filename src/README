@@ -1,0 +1,48 @@
+1.确认每个topic的分区数量，以及每秒的数据量（换算成batch的数据量）
+2.自定义输出文件名（完成）
+    已实现，通过重写MultipleTextOutputFormat中的generateFileNameForKeyValue方法
+
+3.geoip2在spark streaming中的整合使用
+通过sparkContext.addFile()来分发文件，在streamingContext中使用foreachPartition中对每个RDD
+采用mapPartition()处理
+
+4.脏数据的处理，包括：留痕输出，数量统计，异常捕获
+    数量统计没有实现，因为统计功能需要根据具体的业务统计需求来实现
+    留痕处理：异常message发送到kafka的errorTopic中
+
+
+5.性能优化，涉及到多方面的参数调节，比如：kafka，spark，最终出一个配置文档说明，便于后续使用
+
+
+6.开发环境调试
+    在实际开发过程中因为开发环境问题，花费了不少时间处理
+    将本地代码库和远程svn关联，通过intellij commit修改代码
+
+
+
+接下来要做的
+1. exactly-once semantics实现
+
+
+2.spark streaming集成 spark SQL
+
+
+
+
+问题总结
+1.从checkpoint恢复时，找不到mmdb文件,解决方法是每次streamingContext实例化后，检查checkpoint目录是否存在，如果存在，则添加
+mmdb文件
+2.checkpoint时，所有的操作必须包含在createStreamingContext方法内部，即StreamingContext.getorCreate("",functionToCreateContext)
+的functionToCreateContext方法中
+
+
+
+
+关于DirectStream的end-to-end exactly-once semantics
+下面是来自于官方API文档中关于DirectStream的描述：
+this stream ensures that every records is effectively received and transformed exactly once, but gives no guarantees on
+whether the transformed data are outputted exactly once.
+For end-to-end exactly-once semantics, you have to either ensure that the output operation is idempotent,or use transactions
+to output records atomically.
+
+Offsets are tracked by Spark Streaming within its checkpoints

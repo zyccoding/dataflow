@@ -1,0 +1,5 @@
+1.scala asInstanceOf
+scala强大的类型系统支持参数多态，泛型编程，支持类型推导，支持存在向量
+在scala中asInstanceOf[T]的作用是将对象类型强制转换为T类型
+
+
